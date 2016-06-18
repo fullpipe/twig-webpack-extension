@@ -1,0 +1,20 @@
+{
+    "name": "fullpipe/twig-webpack-extension",
+    "description": "Inject your webpack entry points into twig templates with easy.",
+    "type": "library",
+    "keywords": ["webpack", "twig", "extension"],
+    "require": {
+        "twig/twig": "~1.20|~2.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Eugene Bravov",
+            "email": "eugene.bravov@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": { "Fullpipe\\Twig\\Extension\\Webpack\\": "" }
+    },
+    "minimum-stability": "dev"
+}
