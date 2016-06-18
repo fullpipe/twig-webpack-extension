@@ -18,6 +18,10 @@ var ManifestPlugin = require('webpack-manifest-plugin');
 ...
 module.exports = {
     ...
+    entry: {
+        vendor: ["jquery", "lodash"],
+        main: './src/main.js'
+    },
     output: {
         ...
         publicPath: '/build/', //required!
@@ -62,7 +66,6 @@ services:
 If you use `[hash]` or `[chunkhash]` in webpack.output
 
 ```js
-    ...
     output: {
         filename: '[name].[chunkhash].js',
         chunkFilename: '[name].[chunkhash].js'
