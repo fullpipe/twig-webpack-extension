@@ -35,10 +35,12 @@ module.exports = {
 In symfony 2/3
 
 ```yaml
+parameters:
+    ...
+    webpack.manifest: /var/www/web/build/manifest.json
+    webpack.publicPath: /build/
+
 services:
-    parameters:
-        webpack.manifest: /var/www/web/build/manifest.json
-        webpack.publicPath: /build/
     ...
     app.twig_extension:
         class: Fullpipe\Twig\Extension\Webpack\WebpackExtension
