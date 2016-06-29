@@ -74,3 +74,5 @@ If you use `[hash]` or `[chunkhash]` in webpack.output
 
 You should clear twig cache after each webpack compilation.
 So for dev environment do not use `[hash]` or `[chunkhash]`.
+
+#### Works with extract-text-webpack-plugin

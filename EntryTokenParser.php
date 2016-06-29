@@ -49,18 +49,23 @@ class EntryTokenParser extends \Twig_TokenParser
         }
 
         $manifest = json_decode(file_get_contents($this->manifestFile), true);
+        $assets = [];
 
-        if (isset($manifest[$entryName])) {
-            $entry = $manifest[$entryName];
-        } elseif (isset($manifest[$entryName.'.js'])) {
-            $entry = $manifest[$entryName.'.js'];
+        if (isset($manifest[$entryName.'.js']) || isset($manifest[$entryName.'.css'])) {
+            if (isset($manifest[$entryName.'.css'])) {
+                $entryPath = $this->publicPath.$manifest[$entryName.'.css'];
+                $assets[] = '<link rel="stylesheet" href="'.$entryPath.'">';
+            }
+
+            if (isset($manifest[$entryName.'.js'])) {
+                $entryPath = $this->publicPath.$manifest[$entryName.'.js'];
+                $assets[] = '<script type="text/javascript" src="'.$entryPath.'"></script>';
+            }
         } else {
-            throw new \Twig_Error_Loader('Webpack entry '.$entryName.'[.js] not exists.', $token->getLine(), $stream->getFilename());
+            throw new \Twig_Error_Loader('Webpack entry '.$entryName.' not exists.', $token->getLine(), $stream->getFilename());
         }
 
-        $entryPath = $this->publicPath.$entry;
-
-        return new \Twig_Node_Text('<script type="text/javascript" src="'.$entryPath.'"></script>', $token->getLine());
+        return new \Twig_Node_Text(implode('', $assets), $token->getLine());
     }
 
     /**
