@@ -1,6 +1,8 @@
 <?php
 
 namespace Fullpipe\Twig\Extension\Webpack;
+use Twig_Error_Loader;
+use Twig_Token;
 
 /**
  * EntryTokenParser.
@@ -34,7 +36,7 @@ class EntryTokenParser extends \Twig_TokenParser
      *
      * @param Twig_Token $token A Twig_Token instance
      *
-     * @return Twig_Node_Text
+     * @return \Twig_Node_Text
      *
      * @throws Twig_Error_Loader
      */
@@ -54,12 +56,12 @@ class EntryTokenParser extends \Twig_TokenParser
         if (isset($manifest[$entryName.'.js']) || isset($manifest[$entryName.'.css'])) {
             if (isset($manifest[$entryName.'.css'])) {
                 $entryPath = $this->publicPath.$manifest[$entryName.'.css'];
-                $assets[] = '<link rel="stylesheet" href="'.$entryPath.'">';
+                $assets[] = "/".$entryPath;
             }
 
             if (isset($manifest[$entryName.'.js'])) {
                 $entryPath = $this->publicPath.$manifest[$entryName.'.js'];
-                $assets[] = '<script type="text/javascript" src="'.$entryPath.'"></script>';
+                $assets[] = "/".$entryPath;
             }
         } else {
             throw new \Twig_Error_Loader('Webpack entry '.$entryName.' not exists.', $token->getLine(), $stream->getFilename());

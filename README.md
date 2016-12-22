@@ -57,9 +57,10 @@ services:
 
 ### Inject entry points to your templates
 
-```twig
-    {% webpack_entry 'vendor' %}
-    {% webpack_entry 'main' %}
+
+```twig (just like assetic)
+    <script type="text/javascript" src="{% webpack_entry 'vendor' %}"></script>
+    <script type="text/javascript" src="{% webpack_entry 'main' %}"></script>
 ```
 
 ### Others
