@@ -55,10 +55,10 @@ services:
             - { name: twig.extension }
 ```
 
-### Inject entry points to your templates
+### Inject entry points to your templates just like assetic
 
 
-```twig (just like assetic)
+```
     <script type="text/javascript" src="{% webpack_entry 'vendor' %}"></script>
     <script type="text/javascript" src="{% webpack_entry 'main' %}"></script>
 ```
