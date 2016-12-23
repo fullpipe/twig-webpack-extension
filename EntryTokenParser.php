@@ -1,6 +1,8 @@
 <?php
 
 namespace Fullpipe\Twig\Extension\Webpack;
+use Twig_Error_Loader;
+use Twig_Token;
 
 /**
  * EntryTokenParser.
@@ -25,7 +27,7 @@ class EntryTokenParser extends \Twig_TokenParser
      */
     public function __construct($manifestFile, $publicPath)
     {
-        $this->manifestFile = $manifestFile;
+        $this->manifestFile = '.'.$manifestFile;
         $this->publicPath = $publicPath;
     }
 
@@ -34,7 +36,7 @@ class EntryTokenParser extends \Twig_TokenParser
      *
      * @param Twig_Token $token A Twig_Token instance
      *
-     * @return Twig_Node_Text
+     * @return \Twig_Node_Text
      *
      * @throws Twig_Error_Loader
      */
