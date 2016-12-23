@@ -1,6 +1,8 @@
 <?php
 
 namespace Fullpipe\Twig\Extension\Webpack;
+use Twig_Error_Loader;
+use Twig_Token;
 
 /**
  * EntryTokenParser.
@@ -34,7 +36,7 @@ class EntryTokenParser extends \Twig_TokenParser
      *
      * @param Twig_Token $token A Twig_Token instance
      *
-     * @return Twig_Node_Text
+     * @return \Twig_Node_Text
      *
      * @throws Twig_Error_Loader
      */
@@ -44,7 +46,7 @@ class EntryTokenParser extends \Twig_TokenParser
         $entryName = $stream->expect(\Twig_Token::STRING_TYPE)->getValue();
         $stream->expect(\Twig_Token::BLOCK_END_TYPE);
 
-        if (!file_exists($this->manifestFile)) {
+        if (!file_exists('.'.$this->manifestFile)) {
             throw new \Twig_Error_Loader('Webpack manifest file not exists.', $token->getLine(), $stream->getFilename());
         }
 
