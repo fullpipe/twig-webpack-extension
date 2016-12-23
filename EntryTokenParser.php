@@ -27,7 +27,7 @@ class EntryTokenParser extends \Twig_TokenParser
      */
     public function __construct($manifestFile, $publicPath)
     {
-        $this->manifestFile = $manifestFile;
+        $this->manifestFile = '.'.$manifestFile;
         $this->publicPath = $publicPath;
     }
 
@@ -46,7 +46,7 @@ class EntryTokenParser extends \Twig_TokenParser
         $entryName = $stream->expect(\Twig_Token::STRING_TYPE)->getValue();
         $stream->expect(\Twig_Token::BLOCK_END_TYPE);
 
-        if (!file_exists('.'.$this->manifestFile)) {
+        if (!file_exists($this->manifestFile)) {
             throw new \Twig_Error_Loader('Webpack manifest file not exists.', $token->getLine(), $stream->getFilename());
         }
 
