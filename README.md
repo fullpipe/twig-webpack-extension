@@ -41,8 +41,8 @@ In symfony 2/3
 ```yaml
 parameters:
     ...
-    webpack.manifest: /var/www/web/build/manifest.json
-    webpack.publicPath: /build/
+    webpack.manifest: "%kernel.root_dir%/../web/build/manifest.json" #should be absolute
+    webpack.publicPath: /build/ #should be same as output.publicPath in webpack config
 
 services:
     ...
