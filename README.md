@@ -69,7 +69,7 @@ services:
     (...)
 
     twig_extension.webpack:
-        class: Fullpipe\Twig\Extension\Webpack\WebpackExtension
+        class: Fullpipe\TwigWebpackExtension\WebpackExtension
         public: false
         arguments:
             - "%webpack.manifest%"
