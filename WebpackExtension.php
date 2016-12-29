@@ -15,18 +15,25 @@ class WebpackExtension extends \Twig_Extension
     /**
      * @var string
      */
-    protected $publicPath;
+    protected $publicPathJs;
+
+    /**
+     * @var string
+     */
+    protected $publicPathCss;
 
     /**
      * Constructor.
      *
-     * @param string $manifestFile absolute path to your manifest.json
-     * @param string $publicPath   your webpack output.publicPath
+     * @param string $manifestFile  absolute path to your manifest.json
+     * @param string $publicPathJs  your webpack output.publicPath
+     * @param string $publicPathCss your webpack output.publicPath
      */
-    public function __construct($manifestFile, $publicPath = '/build/')
+    public function __construct($manifestFile, $publicPathJs = '/js/', $publicPathCss = '/css/')
     {
         $this->manifestFile = $manifestFile;
-        $this->publicPath = $publicPath;
+        $this->publicPathJs = $publicPathJs;
+        $this->publicPathCss = $publicPathCss;
     }
 
     /**
@@ -42,6 +49,9 @@ class WebpackExtension extends \Twig_Extension
      */
     public function getTokenParsers()
     {
-        return array(new EntryTokenParser($this->manifestFile, $this->publicPath));
+        return [
+            new EntryTokenParserJs($this->manifestFile, $this->publicPathJs),
+            new EntryTokenParserCss($this->manifestFile, $this->publicPathCss),
+        ];
     }
 }

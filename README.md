@@ -2,34 +2,45 @@
 
 ### Install
 
-`composer require fullpipe/twig-webpack-extension`
+```bash
+$ composer require fullpipe/twig-webpack-extension
+```
 
 ### Set up webpack
 Install webpack-manifest-plugin
 
-```
-npm install webpack-manifest-plugin --save
+```bash
+$ npm install webpack-manifest-plugin --save-dev
+$ yarn add webpack-manifest-plugin --dev
 ```
 
 Configure `webpack.config.js`
 
 ```js
 var ManifestPlugin = require('webpack-manifest-plugin');
-...
+
+(...)
+
 module.exports = {
-    ...
+    
+    (...)
+    
     entry: {
         vendor: ["jquery", "lodash"],
         main: './src/main.js'
     },
     output: {
-        ...
+
+        (...)
+        
         publicPath: '/build/', //required!
-        ...
+
+        (...)
     },
     plugins: [
         new ManifestPlugin(),
-        ...
+
+        (...)
     ]
 }
 ```
@@ -40,17 +51,19 @@ In symfony 2/3
 
 ```yaml
 parameters:
-    ...
+    (...)
+
     webpack.manifest: "%kernel.root_dir%/../web/build/manifest.json" #should be absolute
-    webpack.publicPath: /build/ #should be same as output.publicPath in webpack config
+    webpack.public_path: /build/ #should be same as output.publicPath in webpack config
 
 services:
-    ...
+    (...)
+
     app.twig_extension:
         class: Fullpipe\Twig\Extension\Webpack\WebpackExtension
         arguments:
             - '%webpack.manifest%'
-            - '%webpack.publicPath%'
+            - '%webpack.public_path%'
         tags:
             - { name: twig.extension }
 ```
@@ -58,8 +71,8 @@ services:
 ### Inject entry points to your templates
 
 ```twig
-    {% webpack_entry 'vendor' %}
-    {% webpack_entry 'main' %}
+    {% webpack_entry_js 'vendor' %}
+    {% webpack_entry_js 'main' %}
 ```
 
 ### Others

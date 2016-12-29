@@ -5,7 +5,7 @@ namespace Fullpipe\Twig\Extension\Webpack;
 /**
  * EntryTokenParser.
  */
-class EntryTokenParser extends \Twig_TokenParser
+class EntryTokenParserJs extends \Twig_TokenParser
 {
     /**
      * @var string
@@ -45,24 +45,25 @@ class EntryTokenParser extends \Twig_TokenParser
         $stream->expect(\Twig_Token::BLOCK_END_TYPE);
 
         if (!file_exists($this->manifestFile)) {
-            throw new \Twig_Error_Loader('Webpack manifest file not exists.', $token->getLine(), $stream->getFilename());
+            throw new \Twig_Error_Loader(
+                'Webpack manifest file not exists.',
+                $token->getLine(),
+                $stream->getSourceContext()
+            );
         }
 
         $manifest = json_decode(file_get_contents($this->manifestFile), true);
         $assets = [];
 
-        if (isset($manifest[$entryName.'.js']) || isset($manifest[$entryName.'.css'])) {
-            if (isset($manifest[$entryName.'.css'])) {
-                $entryPath = $this->publicPath.$manifest[$entryName.'.css'];
-                $assets[] = '<link rel="stylesheet" href="'.$entryPath.'">';
-            }
-
-            if (isset($manifest[$entryName.'.js'])) {
-                $entryPath = $this->publicPath.$manifest[$entryName.'.js'];
-                $assets[] = '<script type="text/javascript" src="'.$entryPath.'"></script>';
-            }
+        if (isset($manifest[$entryName . '.js'])) {
+            $entryPath = $this->publicPath . $manifest[$entryName . '.js'];
+            $assets[] = '<script type="text/javascript" src="' . $entryPath . '"></script>';
         } else {
-            throw new \Twig_Error_Loader('Webpack entry '.$entryName.' not exists.', $token->getLine(), $stream->getFilename());
+            throw new \Twig_Error_Loader(
+                'Webpack entry ' . $entryName . ' not exists.',
+                $token->getLine(),
+                $stream->getSourceContext()
+            );
         }
 
         return new \Twig_Node_Text(implode('', $assets), $token->getLine());
@@ -73,6 +74,6 @@ class EntryTokenParser extends \Twig_TokenParser
      */
     public function getTag()
     {
-        return 'webpack_entry';
+        return 'webpack_entry_js';
     }
 }
