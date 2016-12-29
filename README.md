@@ -1,4 +1,6 @@
 # Twig Webpack extension
+> Inject your webpack entry points into twig templates with easy.
+
 This repo provides a Twig extension that joins Webpack resultant files with Twig template engine in an easy way.
 This approach allows the dynamic insertion of the css stylesheets and js scripts with Webpack generated hash.
 >Also works well with **extract-text-webpack-plugin**

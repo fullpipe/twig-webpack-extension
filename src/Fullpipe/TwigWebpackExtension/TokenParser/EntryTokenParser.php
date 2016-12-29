@@ -1,43 +1,22 @@
 <?php
 
-namespace Fullpipe\Twig\Extension\Webpack;
+namespace Fullpipe\TwigWebpackExtension\TokenParser;
 
-/**
- * EntryTokenParser.
- */
-class EntryTokenParserJs extends \Twig_TokenParser
+abstract class EntryTokenParser extends \Twig_TokenParser
 {
-    /**
-     * @var string
-     */
     protected $manifestFile;
-
-    /**
-     * @var string
-     */
     protected $publicPath;
 
-    /**
-     * Constructor.
-     *
-     * @param string $manifestFile absolute path to your manifest.json
-     * @param string $publicPath   your webpack output.publicPath
-     */
+    abstract protected function type();
+
+    abstract protected function generateHtml($entryPath);
+
     public function __construct($manifestFile, $publicPath)
     {
         $this->manifestFile = $manifestFile;
         $this->publicPath = $publicPath;
     }
 
-    /**
-     * Parses a token and returns a node.
-     *
-     * @param Twig_Token $token A Twig_Token instance
-     *
-     * @return Twig_Node_Text
-     *
-     * @throws Twig_Error_Loader
-     */
     public function parse(\Twig_Token $token)
     {
         $stream = $this->parser->getStream();
@@ -48,32 +27,30 @@ class EntryTokenParserJs extends \Twig_TokenParser
             throw new \Twig_Error_Loader(
                 'Webpack manifest file not exists.',
                 $token->getLine(),
-                $stream->getSourceContext()
+                $stream->getFilename()
             );
         }
 
         $manifest = json_decode(file_get_contents($this->manifestFile), true);
         $assets = [];
 
-        if (isset($manifest[$entryName . '.js'])) {
-            $entryPath = $this->publicPath . $manifest[$entryName . '.js'];
-            $assets[] = '<script type="text/javascript" src="' . $entryPath . '"></script>';
+        if (isset($manifest[$entryName . '.' . $this->type()])) {
+            $entryPath = $this->publicPath . $manifest[$entryName . '.' . $this->type()];
+
+            $assets[] = $this->generateHtml($entryPath);
         } else {
             throw new \Twig_Error_Loader(
                 'Webpack entry ' . $entryName . ' not exists.',
                 $token->getLine(),
-                $stream->getSourceContext()
+                $stream->getFilename()
             );
         }
 
         return new \Twig_Node_Text(implode('', $assets), $token->getLine());
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getTag()
     {
-        return 'webpack_entry_js';
+        return 'webpack_entry_' . $this->type();
     }
 }
