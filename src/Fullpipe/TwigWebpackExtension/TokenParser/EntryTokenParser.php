@@ -40,7 +40,7 @@ abstract class EntryTokenParser extends \Twig_TokenParser
             $assets[] = $this->generateHtml($entryPath);
         } else {
             throw new \Twig_Error_Loader(
-                'Webpack entry ' . $entryName . ' not exists.',
+                'Webpack ' . $this->type() . ' entry ' . $entryName . ' not exists.',
                 $token->getLine(),
                 $stream->getFilename()
             );
