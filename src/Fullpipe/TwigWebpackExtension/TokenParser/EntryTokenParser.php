@@ -27,7 +27,7 @@ abstract class EntryTokenParser extends \Twig_TokenParser
             throw new \Twig_Error_Loader(
                 'Webpack manifest file not exists.',
                 $token->getLine(),
-                $stream->getFilename()
+                $stream->getSourceContext()->getName()
             );
         }
 
@@ -42,7 +42,7 @@ abstract class EntryTokenParser extends \Twig_TokenParser
             throw new \Twig_Error_Loader(
                 'Webpack ' . $this->type() . ' entry ' . $entryName . ' not exists.',
                 $token->getLine(),
-                $stream->getFilename()
+                $stream->getSourceContext()->getName()
             );
         }
 
