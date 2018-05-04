@@ -17,6 +17,9 @@ abstract class EntryTokenParser extends \Twig_TokenParser
         $this->publicPath = $publicPath;
     }
 
+    /**
+     * Parse Twig string with webpack manifest values.
+     */
     public function parse(\Twig_Token $token)
     {
         $stream = $this->parser->getStream();
@@ -35,8 +38,12 @@ abstract class EntryTokenParser extends \Twig_TokenParser
         $assets = [];
 
         if (isset($manifest[$entryName . '.' . $this->type()])) {
-            $entryPath = $this->publicPath . $manifest[$entryName . '.' . $this->type()];
-
+            $assetPath = $manifest[$entryName . '.' . $this->type()];
+            if (strpos($assetPath, 'cloudfront') !== false) {
+                $entryPath = $manifest[$entryName . '.' . $this->type()];
+            } else {
+                $entryPath = $this->publicPath . $manifest[$entryName . '.' . $this->type()];
+            }
             $assets[] = $this->generateHtml($entryPath);
         } else {
             throw new \Twig_Error_Loader(
