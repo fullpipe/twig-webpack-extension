@@ -28,7 +28,7 @@ abstract class EntryTokenParser extends \Twig_TokenParser
 
         if (!file_exists($this->manifestFile)) {
             throw new \Twig_Error_Loader(
-                'Webpack manifest file not exists.',
+                'Webpack manifest file doesn\'t exist!',
                 $token->getLine(),
                 $stream->getSourceContext()->getName()
             );

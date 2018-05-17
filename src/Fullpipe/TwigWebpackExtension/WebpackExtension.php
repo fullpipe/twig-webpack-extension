@@ -10,12 +10,15 @@ class WebpackExtension extends \Twig_Extension
     protected $manifestFile;
     protected $publicPathJs;
     protected $publicPathCss;
+    protected $publicPathFile;
 
-    public function __construct($manifestFile, $publicPathJs = '/js/', $publicPathCss = '/css/')
+    public function __construct($manifestFile, $publicPathJs = '/js/', $publicPathCss = '/css/', $publicPathFile = '/file/')
     {
         $this->manifestFile = $manifestFile;
         $this->publicPathJs = $publicPathJs;
         $this->publicPathCss = $publicPathCss;
+
+        $this->publicPathFile = $publicPathFile;
     }
 
     public function getName()
@@ -28,6 +31,7 @@ class WebpackExtension extends \Twig_Extension
         return [
             new EntryTokenParserJs($this->manifestFile, $this->publicPathJs),
             new EntryTokenParserCss($this->manifestFile, $this->publicPathCss),
+            new EntryTokenParserFile($this->manifestFile, $this->publicPathFile),
         ];
     }
 }
