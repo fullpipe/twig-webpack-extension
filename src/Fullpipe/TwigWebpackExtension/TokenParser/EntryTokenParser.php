@@ -2,7 +2,12 @@
 
 namespace Fullpipe\TwigWebpackExtension\TokenParser;
 
-abstract class EntryTokenParser extends \Twig_TokenParser
+use Twig\Error\LoaderError;
+use Twig\Node\TextNode;
+use Twig\Token;
+use Twig\TokenParser\AbstractTokenParser;
+
+abstract class EntryTokenParser extends AbstractTokenParser
 {
     protected $manifestFile;
     protected $publicPath;
@@ -17,14 +22,14 @@ abstract class EntryTokenParser extends \Twig_TokenParser
         $this->publicPath = $publicPath;
     }
 
-    public function parse(\Twig_Token $token)
+    public function parse(Token $token)
     {
         $stream = $this->parser->getStream();
-        $entryName = $stream->expect(\Twig_Token::STRING_TYPE)->getValue();
-        $stream->expect(\Twig_Token::BLOCK_END_TYPE);
+        $entryName = $stream->expect(Token::STRING_TYPE)->getValue();
+        $stream->expect(Token::BLOCK_END_TYPE);
 
         if (!file_exists($this->manifestFile)) {
-            throw new \Twig_Error_Loader(
+            throw new LoaderError(
                 'Webpack manifest file not exists.',
                 $token->getLine(),
                 $stream->getSourceContext()->getName()
@@ -34,21 +39,26 @@ abstract class EntryTokenParser extends \Twig_TokenParser
         $manifest = json_decode(file_get_contents($this->manifestFile), true);
         $assets = [];
 
-        if (isset($manifest[$entryName . '.' . $this->type()])) {
-            $entryPath = $this->publicPath . $manifest[$entryName . '.' . $this->type()];
+        $manifestIndex = $entryName . '.' . $this->type();
+
+        if (isset($manifest[$manifestIndex])) {
+            $entryPath = $this->publicPath . $manifest[$manifestIndex];
 
             $assets[] = $this->generateHtml($entryPath);
         } else {
-            throw new \Twig_Error_Loader(
+            throw new LoaderError(
                 'Webpack ' . $this->type() . ' entry ' . $entryName . ' not exists.',
                 $token->getLine(),
                 $stream->getSourceContext()->getName()
             );
         }
 
-        return new \Twig_Node_Text(implode('', $assets), $token->getLine());
+        return new TextNode(implode('', $assets), $token->getLine());
     }
 
+    /**
+     * @return string
+     */
     public function getTag()
     {
         return 'webpack_entry_' . $this->type();

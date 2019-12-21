@@ -15,11 +15,25 @@
         }
     ],
     "require": {
-        "twig/twig": "^1.20 || ^2.0"
+        "php": "^7.2",
+        "ext-json": "*",
+        "twig/twig": "^2.0||^3.0"
+    },
+    "scripts": {
+        "test": "phpunit --configuration phpunit.xml",
+        "test-coverage": "phpunit --configuration phpunit.xml --coverage-clover build/logs/clover.xml --coverage-html build/coverage"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6|^7|^8"
     },
     "autoload": {
         "psr-4": {
             "Fullpipe\\TwigWebpackExtension\\": "src/Fullpipe/TwigWebpackExtension/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Fullpipe\\TwigWebpackExtension\\Tests\\": "tests"
         }
     }
 }
