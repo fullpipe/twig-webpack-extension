@@ -15,7 +15,7 @@ class EntryTokenParserJs extends EntryTokenParser
     /**
      * {@inheritdoc}
      */
-    protected function generateHtml($entryPath): string
+    protected function generateHtml(string $entryPath): string
     {
         return '<script type="text/javascript" src="'.$entryPath.'"></script>';
     }
