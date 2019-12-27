@@ -4,13 +4,19 @@ namespace Fullpipe\TwigWebpackExtension\TokenParser;
 
 class EntryTokenParserCss extends EntryTokenParser
 {
-    protected function type()
+    /**
+     * {@inheritdoc}
+     */
+    protected function type(): string
     {
         return 'css';
     }
 
-    protected function generateHtml($entryPath)
+    /**
+     * {@inheritdoc}
+     */
+    protected function generateHtml($entryPath): string
     {
-        return '<link type="text/css" href="' . $entryPath . '" rel="stylesheet">';
+        return '<link type="text/css" href="'.$entryPath.'" rel="stylesheet">';
     }
 }
