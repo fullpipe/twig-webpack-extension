@@ -104,6 +104,13 @@ services:
 </body>
 ```
 
+or user `defer/async`
+
+```twig
+  {% webpack_entry_js 'main' defer %}
+  {% webpack_entry_js 'not_main' async %}
+```
+
 ### Hashing output files avoiding the browser cache
 If you use `[hash]` or `[chunkhash]`:
 ```js
