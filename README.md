@@ -7,10 +7,12 @@
 > Inject your webpack entry points into twig templates with easy.
 
 This repo provides a Twig extension that joins Webpack resultant files with Twig template engine in an easy way.
-This approach allows the dynamic insertion of the css stylesheets and js scripts with Webpack generated hash.
->Also works well with **extract-text-webpack-plugin**
 
-### Install
+This approach allows the dynamic insertion of the css stylesheets and js scripts with Webpack generated hash.
+
+> Also works well with **extract-text-webpack-plugin**
+
+## Install
 ```bash
 $ composer require fullpipe/twig-webpack-extension
 ```
@@ -59,7 +61,8 @@ module.exports = {
 }
 ```
 
-### Register as a service the Twig extension inside Symfony
+### Register as a Twig extension
+
 ```yaml
 # app/config/services.yml
 
@@ -85,6 +88,7 @@ services:
 ```
 
 ### Inject entry points to your Twig
+
 ```twig
 {# app/Resources/views/base.html.twig #}
 
@@ -111,8 +115,14 @@ or user `defer/async`
   {% webpack_entry_js 'not_main' async %}
 ```
 
-### Hashing output files avoiding the browser cache
+### Example
+
+See fully working [example](example).
+
+## Hashing output files avoiding the browser cache
+
 If you use `[hash]` or `[chunkhash]`:
+
 ```js
 // webpack.config.js
 
@@ -135,4 +145,5 @@ plugins: [
   (...)
 ]
 ```
->You should clear twig cache after each webpack compilation. So for dev environment do not use `[hash]` or `[chunkhash]`.
+
+> You should clear twig cache after each webpack compilation. So for dev environment do not use `[hash]` or `[chunkhash]`.
