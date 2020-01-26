@@ -2,7 +2,6 @@
 
 namespace tests\Fullpipe\TwigWebpackExtension\TokenParser;
 
-use Fullpipe\TwigWebpackExtension\TokenParser\EntryTokenParser;
 use Fullpipe\TwigWebpackExtension\TokenParser\EntryTokenParserCss;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
@@ -11,12 +10,19 @@ use Twig\Loader\LoaderInterface;
 use Twig\Node\TextNode;
 use Twig\Parser;
 use Twig\Source;
+use Twig\TokenParser\AbstractTokenParser;
 
 class EntryTokenParserCssTest extends TestCase
 {
     public function testItIsAParser()
     {
-        $this->assertInstanceOf(EntryTokenParser::class, new EntryTokenParserCss(__DIR__.'/../Resource/manifest.json', '/build/'));
+        $this->assertInstanceOf(AbstractTokenParser::class, new EntryTokenParserCss(__DIR__.'/../Resource/manifest.json', '/build/'));
+    }
+
+    public function testGetTag()
+    {
+        $parser = new EntryTokenParserCss(__DIR__.'/../Resource/manifest.json', '/build/');
+        $this->assertEquals('webpack_entry_css', $parser->getTag());
     }
 
     public function testGenerate()
