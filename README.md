@@ -117,7 +117,7 @@ or user `defer/async`
 
 ### Example
 
-See fully working [example](example).
+See working [example](example) with [webpack.config.js](example/frontend/webpack.config.js).
 
 ## Hashing output files avoiding the browser cache
 
