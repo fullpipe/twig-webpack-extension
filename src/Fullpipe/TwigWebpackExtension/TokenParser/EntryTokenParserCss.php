@@ -12,12 +12,12 @@ class EntryTokenParserCss extends AbstractTokenParser
     /**
      * @var string
      */
-    protected $manifestFile;
+    private $manifestFile;
 
     /**
      * @var string
      */
-    protected $publicPath;
+    private $publicPath;
 
     public function __construct(string $manifestFile, string $publicPath)
     {
@@ -46,12 +46,12 @@ class EntryTokenParserCss extends AbstractTokenParser
             throw new LoaderError('Webpack css entry '.$entryName.' not exists.', $token->getLine(), $stream->getSourceContext());
         }
 
-        $entryPath = $this->publicPath.$manifest[$manifestIndex];
+        $entryPath = $manifest[$manifestIndex];
 
         if ($inline) {
             $tag = \sprintf(
                 '<style>%s</style>',
-                $this->getEntryContent($this->manifestFile, $manifest[$manifestIndex])
+                $this->getEntryContent($entryPath)
             );
         } else {
             $tag = \sprintf(
@@ -66,9 +66,10 @@ class EntryTokenParserCss extends AbstractTokenParser
     /**
      * @throws Exception if file does not exists
      */
-    public function getEntryContent(string $manifestFile, string $entryFile): ?string
+    private function getEntryContent(string $entryFile): ?string
     {
-        $dir = \dirname($manifestFile);
+        $dir = \dirname($this->manifestFile);
+        $entryFile = \str_replace($this->publicPath, '', $entryFile);
 
         if (!\file_exists($dir.'/'.$entryFile)) {
             throw new LoaderError(\sprintf('Entry file "%s" does not exists.', $dir.'/'.$entryFile));

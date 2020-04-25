@@ -1,5 +1,5 @@
 {
-    "main.js": "main.js",
-    "main.css": "main.css",
-    "foo.png": "bar.png"
+  "main.js": "/build/main.js",
+  "main.css": "/build/main.css",
+  "foo.png": "/build/bar.png"
 }

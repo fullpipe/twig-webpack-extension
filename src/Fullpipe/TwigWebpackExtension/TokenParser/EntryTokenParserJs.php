@@ -48,12 +48,12 @@ class EntryTokenParserJs extends AbstractTokenParser
             throw new LoaderError('Webpack js entry '.$entryName.' not exists.', $token->getLine(), $stream->getSourceContext());
         }
 
-        $entryPath = $this->publicPath.$manifest[$manifestIndex];
+        $entryPath = $manifest[$manifestIndex];
 
         if ($inline) {
             $tag = \sprintf(
                 '<script type="text/javascript">%s</script>',
-                $this->getEntryContent($this->manifestFile, $manifest[$manifestIndex])
+                $this->getEntryContent($entryPath)
             );
         } else {
             $tag = \sprintf(
@@ -71,9 +71,10 @@ class EntryTokenParserJs extends AbstractTokenParser
     /**
      * @throws Exception if file does not exists
      */
-    public function getEntryContent(string $manifestFile, string $entryFile): ?string
+    private function getEntryContent(string $entryFile): ?string
     {
-        $dir = \dirname($manifestFile);
+        $dir = \dirname($this->manifestFile);
+        $entryFile = \str_replace($this->publicPath, '', $entryFile);
 
         if (!\file_exists($dir.'/'.$entryFile)) {
             throw new LoaderError(\sprintf('Entry file "%s" does not exists.', $dir.'/'.$entryFile));
