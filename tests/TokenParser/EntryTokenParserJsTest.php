@@ -72,6 +72,22 @@ class EntryTokenParserJsTest extends TestCase
         );
     }
 
+    public function testGenerateInline()
+    {
+        $env = $this->getEnv(__DIR__.'/../Resource/manifest.json', '/build/');
+        $parser = new Parser($env);
+        $source = new Source("{% webpack_entry_js 'main' inline %}", '');
+        $stream = $env->tokenize($source);
+
+        $expected = new TextNode("<script type=\"text/javascript\">alert('foo');\n</script>", 1);
+        $expected->setSourceContext($source);
+
+        $this->assertEquals(
+            $expected,
+            $parser->parse($stream)->getNode('body')->getNode('0')
+        );
+    }
+
     private function getEnv(string $manifest, string $publicPath): Environment
     {
         $env = new Environment(

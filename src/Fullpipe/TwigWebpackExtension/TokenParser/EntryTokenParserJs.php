@@ -34,6 +34,7 @@ class EntryTokenParserJs extends AbstractTokenParser
         $entryName = $stream->expect(Token::STRING_TYPE)->getValue();
         $defer = $stream->nextIf(/* Token::NAME_TYPE */ 5, 'defer');
         $async = $stream->nextIf(/* Token::NAME_TYPE */ 5, 'async');
+        $inline = $stream->nextIf(/* Token::NAME_TYPE */ 5, 'inline');
         $stream->expect(Token::BLOCK_END_TYPE);
 
         if (!\file_exists($this->manifestFile)) {
@@ -49,15 +50,36 @@ class EntryTokenParserJs extends AbstractTokenParser
 
         $entryPath = $this->publicPath.$manifest[$manifestIndex];
 
-        $tag = \sprintf(
-            '<script type="text/javascript" src="%s"%s></script>',
-            $entryPath,
-            $defer
+        if ($inline) {
+            $tag = \sprintf(
+                '<script type="text/javascript">%s</script>',
+                $this->getEntryContent($this->manifestFile, $manifest[$manifestIndex])
+            );
+        } else {
+            $tag = \sprintf(
+                '<script type="text/javascript" src="%s"%s></script>',
+                $entryPath,
+                $defer
                 ? ' defer'
                 : ($async ? ' async' : '')
-        );
+            );
+        }
 
         return new TextNode($tag, $token->getLine());
+    }
+
+    /**
+     * @throws Exception if file does not exists
+     */
+    public function getEntryContent(string $manifestFile, string $entryFile): ?string
+    {
+        $dir = \dirname($manifestFile);
+
+        if (!\file_exists($dir.'/'.$entryFile)) {
+            throw new LoaderError(\sprintf('Entry file "%s" does not exists.', $dir.'/'.$entryFile));
+        }
+
+        return \file_get_contents($dir.'/'.$entryFile);
     }
 
     /**
