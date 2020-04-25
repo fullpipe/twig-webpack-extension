@@ -41,6 +41,22 @@ class EntryTokenParserCssTest extends TestCase
         );
     }
 
+    public function testGenerateInline()
+    {
+        $env = $this->getEnv(__DIR__.'/../Resource/manifest.json', '/build/');
+        $parser = new Parser($env);
+        $source = new Source("{% webpack_entry_css 'main' inline %}", '');
+        $stream = $env->tokenize($source);
+
+        $expected = new TextNode("<style>div { color: green; }\n</style>", 1);
+        $expected->setSourceContext($source);
+
+        $this->assertEquals(
+            $expected,
+            $parser->parse($stream)->getNode('body')->getNode('0')
+        );
+    }
+
     public function testItThrowsExceptionIfNoManifest()
     {
         $this->expectException(LoaderError::class);

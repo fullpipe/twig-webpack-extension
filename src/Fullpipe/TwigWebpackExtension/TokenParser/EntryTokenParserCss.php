@@ -32,6 +32,7 @@ class EntryTokenParserCss extends AbstractTokenParser
     {
         $stream = $this->parser->getStream();
         $entryName = $stream->expect(Token::STRING_TYPE)->getValue();
+        $inline = $stream->nextIf(/* Token::NAME_TYPE */ 5, 'inline');
         $stream->expect(Token::BLOCK_END_TYPE);
 
         if (!\file_exists($this->manifestFile)) {
@@ -47,12 +48,33 @@ class EntryTokenParserCss extends AbstractTokenParser
 
         $entryPath = $this->publicPath.$manifest[$manifestIndex];
 
-        $tag = \sprintf(
-            '<link type="text/css" href="%s" rel="stylesheet">',
-            $entryPath
-        );
+        if ($inline) {
+            $tag = \sprintf(
+                '<style>%s</style>',
+                $this->getEntryContent($this->manifestFile, $manifest[$manifestIndex])
+            );
+        } else {
+            $tag = \sprintf(
+                '<link type="text/css" href="%s" rel="stylesheet">',
+                $entryPath
+            );
+        }
 
         return new TextNode($tag, $token->getLine());
+    }
+
+    /**
+     * @throws Exception if file does not exists
+     */
+    public function getEntryContent(string $manifestFile, string $entryFile): ?string
+    {
+        $dir = \dirname($manifestFile);
+
+        if (!\file_exists($dir.'/'.$entryFile)) {
+            throw new LoaderError(\sprintf('Entry file "%s" does not exists.', $dir.'/'.$entryFile));
+        }
+
+        return \file_get_contents($dir.'/'.$entryFile);
     }
 
     /**
