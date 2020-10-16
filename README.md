@@ -65,9 +65,8 @@ module.exports = {
 # app/config/services.yml
 
 parameters:
-    webpack.manifest: "%kernel.root_dir%/../web/build/manifest.json" #should be absolute
-    webpack.public_path_js: /build/ #same as output.publicPath
-    webpack.public_path_css: /build/ #same as ExtractTextPlugin.publicPath 
+    webpack.manifest: "%kernel.root_dir%/../public/build/manifest.json" #should be absolute
+    webpack.public_dir: "%kernel.root_dir%/../public" #your public-dir
 
 services:
     twig_extension.webpack:
@@ -75,8 +74,7 @@ services:
         public: false
         arguments:
             - "%webpack.manifest%"
-            - "%webpack.public_path_js%"
-            - "%webpack.public_path_css%"
+            - "%webpack.public_dir%"
         tags:
             - { name: twig.extension }
 ```

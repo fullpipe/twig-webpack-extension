@@ -1,7 +1,6 @@
 parameters:
     webpack.manifest: "%kernel.root_dir%/../public/build/manifest.json" #should be absolute
-    webpack.public_path_js: "/build/"
-    webpack.public_path_css: "/build/"
+    webpack.public_dir: "%kernel.root_dir%/../public"
 
 services:
     _defaults:
@@ -21,7 +20,6 @@ services:
         public: false
         arguments:
             - "%webpack.manifest%"
-            - "%webpack.public_path_js%"
-            - "%webpack.public_path_css%"
+            - "%webpack.public_dir%"
         tags:
             - { name: twig.extension }
