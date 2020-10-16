@@ -16,18 +16,18 @@ class EntryTokenParserCssTest extends TestCase
 {
     public function testItIsAParser()
     {
-        $this->assertInstanceOf(AbstractTokenParser::class, new EntryTokenParserCss(__DIR__.'/../Resource/build/manifest.json', '/build/'));
+        $this->assertInstanceOf(AbstractTokenParser::class, new EntryTokenParserCss(__DIR__.'/../Resource/build/manifest.json', __DIR__.'/../Resource'));
     }
 
     public function testGetTag()
     {
-        $parser = new EntryTokenParserCss(__DIR__.'/../Resource/build/manifest.json', '/build/');
+        $parser = new EntryTokenParserCss(__DIR__.'/../Resource/build/manifest.json', __DIR__.'/../Resource');
         $this->assertEquals('webpack_entry_css', $parser->getTag());
     }
 
     public function testBasicParse()
     {
-        $env = $this->getEnv(__DIR__.'/../Resource/build/manifest.json', '/build/');
+        $env = $this->getEnv(__DIR__.'/../Resource/build/manifest.json', __DIR__.'/../Resource');
         $parser = new Parser($env);
         $source = new Source("{% webpack_entry_css 'main' %}", '');
         $stream = $env->tokenize($source);
@@ -43,7 +43,7 @@ class EntryTokenParserCssTest extends TestCase
 
     public function testInline()
     {
-        $env = $this->getEnv(__DIR__.'/../Resource/build/manifest.json', '/build/');
+        $env = $this->getEnv(__DIR__.'/../Resource/build/manifest.json', __DIR__.'/../Resource');
         $parser = new Parser($env);
         $source = new Source("{% webpack_entry_css 'main' inline %}", '');
         $stream = $env->tokenize($source);
@@ -61,7 +61,7 @@ class EntryTokenParserCssTest extends TestCase
     {
         $this->expectException(LoaderError::class);
 
-        $env = $this->getEnv(__DIR__.'/../Resource/not_exists.json', '/build/');
+        $env = $this->getEnv(__DIR__.'/../Resource/not_exists.json', __DIR__.'/../Resource');
         $parser = new Parser($env);
         $source = new Source("{% webpack_entry_css 'main' %}", '');
         $stream = $env->tokenize($source);
@@ -72,20 +72,20 @@ class EntryTokenParserCssTest extends TestCase
     {
         $this->expectException(LoaderError::class);
 
-        $env = $this->getEnv(__DIR__.'/../Resource/build/manifest.json', '/build/');
+        $env = $this->getEnv(__DIR__.'/../Resource/build/manifest.json', __DIR__.'/../Resource');
         $parser = new Parser($env);
         $source = new Source("{% webpack_entry_css 'not_exists' %}", '');
         $stream = $env->tokenize($source);
         $parser->parse($stream);
     }
 
-    private function getEnv(string $manifest, string $publicPath): Environment
+    private function getEnv(string $manifest, string $publicDir): Environment
     {
         $env = new Environment(
             $this->createMock(LoaderInterface::class),
             ['cache' => false, 'autoescape' => false, 'optimizations' => 0]
         );
-        $env->addTokenParser(new EntryTokenParserCss($manifest, $publicPath));
+        $env->addTokenParser(new EntryTokenParserCss($manifest, $publicDir));
 
         return $env;
     }

@@ -16,18 +16,18 @@ class EntryTokenParserJsTest extends TestCase
 {
     public function testItIsAParser()
     {
-        $this->assertInstanceOf(AbstractTokenParser::class, new EntryTokenParserJs(__DIR__.'/../Resource/build/manifest.json', '/build/'));
+        $this->assertInstanceOf(AbstractTokenParser::class, new EntryTokenParserJs(__DIR__.'/../Resource/build/manifest.json', __DIR__.'/../Resource'));
     }
 
     public function testGetTag()
     {
-        $parser = new EntryTokenParserJs(__DIR__.'/../Resource/build/manifest.json', '/build/');
+        $parser = new EntryTokenParserJs(__DIR__.'/../Resource/build/manifest.json', __DIR__.'/../Resource');
         $this->assertEquals('webpack_entry_js', $parser->getTag());
     }
 
     public function testBasic()
     {
-        $env = $this->getEnv(__DIR__.'/../Resource/build/manifest.json', '/build/');
+        $env = $this->getEnv(__DIR__.'/../Resource/build/manifest.json', __DIR__.'/../Resource');
         $parser = new Parser($env);
         $source = new Source("{% webpack_entry_js 'main' %}", '');
         $stream = $env->tokenize($source);
@@ -43,7 +43,7 @@ class EntryTokenParserJsTest extends TestCase
 
     public function testDefer()
     {
-        $env = $this->getEnv(__DIR__.'/../Resource/build/manifest.json', '/build/');
+        $env = $this->getEnv(__DIR__.'/../Resource/build/manifest.json', __DIR__.'/../Resource');
         $parser = new Parser($env);
         $source = new Source("{% webpack_entry_js 'main' defer %}", '');
         $stream = $env->tokenize($source);
@@ -59,7 +59,7 @@ class EntryTokenParserJsTest extends TestCase
 
     public function testAsync()
     {
-        $env = $this->getEnv(__DIR__.'/../Resource/build/manifest.json', '/build/');
+        $env = $this->getEnv(__DIR__.'/../Resource/build/manifest.json', __DIR__.'/../Resource');
         $parser = new Parser($env);
         $source = new Source("{% webpack_entry_js 'main' async %}", '');
         $stream = $env->tokenize($source);
@@ -75,7 +75,7 @@ class EntryTokenParserJsTest extends TestCase
 
     public function testInline()
     {
-        $env = $this->getEnv(__DIR__.'/../Resource/build/manifest.json', '/build/');
+        $env = $this->getEnv(__DIR__.'/../Resource/build/manifest.json', __DIR__.'/../Resource');
         $parser = new Parser($env);
         $source = new Source("{% webpack_entry_js 'second' inline %}", '');
         $stream = $env->tokenize($source);
@@ -91,7 +91,7 @@ class EntryTokenParserJsTest extends TestCase
 
     public function testItThrowsExceptionIfManifestIsUnreadable()
     {
-        $env = $this->getEnv(__DIR__.'/../Resource/build/no_manifest.json', '/build/');
+        $env = $this->getEnv(__DIR__.'/../Resource/build/no_manifest.json', __DIR__.'/../Resource');
         $parser = new Parser($env);
         $source = new Source("{% webpack_entry_js 'second' inline %}", '');
         $stream = $env->tokenize($source);
@@ -103,7 +103,7 @@ class EntryTokenParserJsTest extends TestCase
 
     public function testItThrowsExceptionIfEntryIsUnreadable()
     {
-        $env = $this->getEnv(__DIR__.'/../Resource/build/manifest.json', '/fake_build/');
+        $env = $this->getEnv(__DIR__.'/../Resource/build/manifest.json', __DIR__.'/../Resource/fake_public_dir');
         $parser = new Parser($env);
         $source = new Source("{% webpack_entry_js 'second' inline %}", '');
         $stream = $env->tokenize($source);
@@ -113,13 +113,13 @@ class EntryTokenParserJsTest extends TestCase
         $parser->parse($stream)->getNode('body')->getNode('0');
     }
 
-    private function getEnv(string $manifest, string $publicPath): Environment
+    private function getEnv(string $manifest, string $publicDir): Environment
     {
         $env = new Environment(
             $this->createMock(LoaderInterface::class),
             ['cache' => false, 'autoescape' => false, 'optimizations' => 0]
         );
-        $env->addTokenParser(new EntryTokenParserJs($manifest, $publicPath));
+        $env->addTokenParser(new EntryTokenParserJs($manifest, $publicDir));
 
         return $env;
     }

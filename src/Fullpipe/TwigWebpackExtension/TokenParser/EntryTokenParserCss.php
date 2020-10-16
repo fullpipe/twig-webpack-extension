@@ -17,12 +17,12 @@ class EntryTokenParserCss extends AbstractTokenParser
     /**
      * @var string
      */
-    private $publicPath;
+    private $publicDir;
 
-    public function __construct(string $manifestFile, string $publicPath)
+    public function __construct(string $manifestFile, string $publicDir)
     {
         $this->manifestFile = $manifestFile;
-        $this->publicPath = $publicPath;
+        $this->publicDir = $publicDir;
     }
 
     /**
@@ -68,16 +68,15 @@ class EntryTokenParserCss extends AbstractTokenParser
      */
     private function getEntryContent(string $entryFile): ?string
     {
-        $dir = \dirname($this->manifestFile);
-        $entryFile = \str_replace($this->publicPath, '', $entryFile);
+        $entryFile = \trim($entryFile, '/');
 
-        if (!\file_exists($dir.'/'.$entryFile)) {
-            throw new LoaderError(\sprintf('Entry file "%s" does not exists.', $dir.'/'.$entryFile));
+        if (!\file_exists($this->publicDir.'/'.$entryFile)) {
+            throw new LoaderError(\sprintf('Entry file "%s" does not exists.', $this->publicDir.'/'.$entryFile));
         }
 
-        $content = \file_get_contents($dir.'/'.$entryFile);
+        $content = \file_get_contents($this->publicDir.'/'.$entryFile);
         if (false === $content) {
-            throw new LoaderError(\sprintf('Unable to read file "%s".', $dir.'/'.$entryFile));
+            throw new LoaderError(\sprintf('Unable to read file "%s".', $this->publicDir.'/'.$entryFile));
         }
 
         return $content;
