@@ -1,5 +1,5 @@
 .idea/
 composer.lock
 vendor/
-build/
+example/public/build/
 .phpunit.result.cache
