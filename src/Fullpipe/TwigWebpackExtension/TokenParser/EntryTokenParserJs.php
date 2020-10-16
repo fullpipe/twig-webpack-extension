@@ -69,7 +69,7 @@ class EntryTokenParserJs extends AbstractTokenParser
     }
 
     /**
-     * @throws Exception if file does not exists
+     * @throws LoaderError if file does not exists or not readable
      */
     private function getEntryContent(string $entryFile): ?string
     {
@@ -80,7 +80,12 @@ class EntryTokenParserJs extends AbstractTokenParser
             throw new LoaderError(\sprintf('Entry file "%s" does not exists.', $dir.'/'.$entryFile));
         }
 
-        return \file_get_contents($dir.'/'.$entryFile);
+        $content = \file_get_contents($dir.'/'.$entryFile);
+        if (false === $content) {
+            throw new LoaderError(\sprintf('Unable to read file "%s".', $dir.'/'.$entryFile));
+        }
+
+        return $content;
     }
 
     /**

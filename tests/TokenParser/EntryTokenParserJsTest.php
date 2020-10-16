@@ -5,6 +5,7 @@ namespace tests\Fullpipe\TwigWebpackExtension\TokenParser;
 use Fullpipe\TwigWebpackExtension\TokenParser\EntryTokenParserJs;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
+use Twig\Error\LoaderError;
 use Twig\Loader\LoaderInterface;
 use Twig\Node\TextNode;
 use Twig\Parser;
@@ -15,23 +16,23 @@ class EntryTokenParserJsTest extends TestCase
 {
     public function testItIsAParser()
     {
-        $this->assertInstanceOf(AbstractTokenParser::class, new EntryTokenParserJs(__DIR__.'/../Resource/manifest.json', '/build/'));
+        $this->assertInstanceOf(AbstractTokenParser::class, new EntryTokenParserJs(__DIR__.'/../Resource/build/manifest.json', '/build/'));
     }
 
     public function testGetTag()
     {
-        $parser = new EntryTokenParserJs(__DIR__.'/../Resource/manifest.json', '/build/');
+        $parser = new EntryTokenParserJs(__DIR__.'/../Resource/build/manifest.json', '/build/');
         $this->assertEquals('webpack_entry_js', $parser->getTag());
     }
 
-    public function testGenerate()
+    public function testBasic()
     {
-        $env = $this->getEnv(__DIR__.'/../Resource/manifest.json', '/build/');
+        $env = $this->getEnv(__DIR__.'/../Resource/build/manifest.json', '/build/');
         $parser = new Parser($env);
         $source = new Source("{% webpack_entry_js 'main' %}", '');
         $stream = $env->tokenize($source);
 
-        $expected = new TextNode('<script type="text/javascript" src="/build/main.js"></script>', 1);
+        $expected = new TextNode('<script type="text/javascript" src="/build/js/main.js"></script>', 1);
         $expected->setSourceContext($source);
 
         $this->assertEquals(
@@ -40,14 +41,14 @@ class EntryTokenParserJsTest extends TestCase
         );
     }
 
-    public function testGenerateDefer()
+    public function testDefer()
     {
-        $env = $this->getEnv(__DIR__.'/../Resource/manifest.json', '/build/');
+        $env = $this->getEnv(__DIR__.'/../Resource/build/manifest.json', '/build/');
         $parser = new Parser($env);
         $source = new Source("{% webpack_entry_js 'main' defer %}", '');
         $stream = $env->tokenize($source);
 
-        $expected = new TextNode('<script type="text/javascript" src="/build/main.js" defer></script>', 1);
+        $expected = new TextNode('<script type="text/javascript" src="/build/js/main.js" defer></script>', 1);
         $expected->setSourceContext($source);
 
         $this->assertEquals(
@@ -56,14 +57,14 @@ class EntryTokenParserJsTest extends TestCase
         );
     }
 
-    public function testGenerateAsync()
+    public function testAsync()
     {
-        $env = $this->getEnv(__DIR__.'/../Resource/manifest.json', '/build/');
+        $env = $this->getEnv(__DIR__.'/../Resource/build/manifest.json', '/build/');
         $parser = new Parser($env);
         $source = new Source("{% webpack_entry_js 'main' async %}", '');
         $stream = $env->tokenize($source);
 
-        $expected = new TextNode('<script type="text/javascript" src="/build/main.js" async></script>', 1);
+        $expected = new TextNode('<script type="text/javascript" src="/build/js/main.js" async></script>', 1);
         $expected->setSourceContext($source);
 
         $this->assertEquals(
@@ -72,26 +73,50 @@ class EntryTokenParserJsTest extends TestCase
         );
     }
 
-    public function testGenerateInline()
+    public function testInline()
     {
-        $env = $this->getEnv(__DIR__.'/../Resource/manifest.json', '/build/');
+        $env = $this->getEnv(__DIR__.'/../Resource/build/manifest.json', '/build/');
         $parser = new Parser($env);
-        $source = new Source("{% webpack_entry_js 'main' inline %}", '');
+        $source = new Source("{% webpack_entry_js 'second' inline %}", '');
         $stream = $env->tokenize($source);
 
-        $expected = new TextNode("<script type=\"text/javascript\">alert('foo');\n</script>", 1);
+        $expected = new TextNode("<script type=\"text/javascript\">alert(\"second\");\n</script>", 1);
         $expected->setSourceContext($source);
 
         $this->assertEquals(
             $expected,
             $parser->parse($stream)->getNode('body')->getNode('0')
         );
+    }
+
+    public function testItThrowsExceptionIfManifestIsUnreadable()
+    {
+        $env = $this->getEnv(__DIR__.'/../Resource/build/no_manifest.json', '/build/');
+        $parser = new Parser($env);
+        $source = new Source("{% webpack_entry_js 'second' inline %}", '');
+        $stream = $env->tokenize($source);
+
+        $this->expectException(LoaderError::class);
+
+        $parser->parse($stream)->getNode('body')->getNode('0');
+    }
+
+    public function testItThrowsExceptionIfEntryIsUnreadable()
+    {
+        $env = $this->getEnv(__DIR__.'/../Resource/build/manifest.json', '/fake_build/');
+        $parser = new Parser($env);
+        $source = new Source("{% webpack_entry_js 'second' inline %}", '');
+        $stream = $env->tokenize($source);
+
+        $this->expectException(LoaderError::class);
+
+        $parser->parse($stream)->getNode('body')->getNode('0');
     }
 
     private function getEnv(string $manifest, string $publicPath): Environment
     {
         $env = new Environment(
-            $this->getMockBuilder(LoaderInterface::class)->getMock(),
+            $this->createMock(LoaderInterface::class),
             ['cache' => false, 'autoescape' => false, 'optimizations' => 0]
         );
         $env->addTokenParser(new EntryTokenParserJs($manifest, $publicPath));
