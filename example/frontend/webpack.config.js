@@ -8,9 +8,10 @@ module.exports = {
     vendor: ["jquery", "lodash"],
     main: "./src/index.js",
     second: "./src/second.js",
+    inline: "./src/inline.js",
   },
   output: {
-    filename: "js/[name].js",
+    filename: "js/[name].[chunkhash].js",
     path: path.resolve(__dirname, "../public/build"),
     publicPath: "/build/",
   },
@@ -21,7 +22,7 @@ module.exports = {
     }),
     new ManifestPlugin(),
     new ExtractTextPlugin({
-      filename: "css/[name].css",
+      filename: "css/[name].[chunkhash].css",
       publicPath: "/build/",
     }),
   ],
