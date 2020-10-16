@@ -3,7 +3,7 @@
 [![Latest Version on Packagist](https://img.shields.io/github/release/fullpipe/twig-webpack-extension.svg)](https://packagist.org/packages/fullpipe/twig-webpack-extension)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 [![Total Downloads](https://img.shields.io/packagist/dt/fullpipe/twig-webpack-extension.svg)](https://packagist.org/packages/fullpipe/twig-webpack-extension/stats)
-[![Tests](https://github.com/fullpipe/twig-webpack-extension/workflows/test/badge.svg)](https://github.com/fullpipe/twig-webpack-extension/actions)
+[![Tests](https://github.com/fullpipe/twig-webpack-extension/workflows/Tests/badge.svg)](https://github.com/fullpipe/twig-webpack-extension/actions)
 Inject your webpack entry points into twig templates with easy.
 
 This repo provides a Twig extension that joins Webpack resultant files with Twig template engine in an easy way.
