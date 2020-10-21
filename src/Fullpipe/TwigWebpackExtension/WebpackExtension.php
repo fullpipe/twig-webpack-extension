@@ -11,23 +11,12 @@ class WebpackExtension extends AbstractExtension
     /**
      * @var string
      */
-    protected $manifestFile;
+    protected $publicDir;
 
-    /**
-     * @var string
-     */
-    protected $publicPathJs;
-
-    /**
-     * @var string
-     */
-    protected $publicPathCss;
-
-    public function __construct(string $manifestFile, string $publicPathJs = '/js/', string $publicPathCss = '/css/')
+    public function __construct(string $manifestFile, string $publicDir)
     {
         $this->manifestFile = $manifestFile;
-        $this->publicPathJs = $publicPathJs;
-        $this->publicPathCss = $publicPathCss;
+        $this->publicDir = $publicDir;
     }
 
     /**
@@ -44,8 +33,8 @@ class WebpackExtension extends AbstractExtension
     public function getTokenParsers()
     {
         return [
-            new EntryTokenParserJs($this->manifestFile, $this->publicPathJs),
-            new EntryTokenParserCss($this->manifestFile, $this->publicPathCss),
+            new EntryTokenParserJs($this->manifestFile, $this->publicDir),
+            new EntryTokenParserCss($this->manifestFile, $this->publicDir),
         ];
     }
 }

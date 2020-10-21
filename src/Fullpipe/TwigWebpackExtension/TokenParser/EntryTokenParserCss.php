@@ -12,17 +12,17 @@ class EntryTokenParserCss extends AbstractTokenParser
     /**
      * @var string
      */
-    protected $manifestFile;
+    private $manifestFile;
 
     /**
      * @var string
      */
-    protected $publicPath;
+    private $publicDir;
 
-    public function __construct(string $manifestFile, string $publicPath)
+    public function __construct(string $manifestFile, string $publicDir)
     {
         $this->manifestFile = $manifestFile;
-        $this->publicPath = $publicPath;
+        $this->publicDir = $publicDir;
     }
 
     /**
@@ -32,6 +32,7 @@ class EntryTokenParserCss extends AbstractTokenParser
     {
         $stream = $this->parser->getStream();
         $entryName = $stream->expect(Token::STRING_TYPE)->getValue();
+        $inline = $stream->nextIf(/* Token::NAME_TYPE */ 5, 'inline');
         $stream->expect(Token::BLOCK_END_TYPE);
 
         if (!\file_exists($this->manifestFile)) {
@@ -45,14 +46,40 @@ class EntryTokenParserCss extends AbstractTokenParser
             throw new LoaderError('Webpack css entry '.$entryName.' not exists.', $token->getLine(), $stream->getSourceContext());
         }
 
-        $entryPath = $this->publicPath.$manifest[$manifestIndex];
+        $entryPath = $manifest[$manifestIndex];
 
-        $tag = \sprintf(
-            '<link type="text/css" href="%s" rel="stylesheet">',
-            $entryPath
-        );
+        if ($inline) {
+            $tag = \sprintf(
+                '<style>%s</style>',
+                $this->getEntryContent($entryPath)
+            );
+        } else {
+            $tag = \sprintf(
+                '<link type="text/css" href="%s" rel="stylesheet">',
+                $entryPath
+            );
+        }
 
         return new TextNode($tag, $token->getLine());
+    }
+
+    /**
+     * @throws LoaderError if file does not exists or not readable
+     */
+    private function getEntryContent(string $entryFile): ?string
+    {
+        $entryFile = \trim($entryFile, '/');
+
+        if (!\file_exists($this->publicDir.'/'.$entryFile)) {
+            throw new LoaderError(\sprintf('Entry file "%s" does not exists.', $this->publicDir.'/'.$entryFile));
+        }
+
+        $content = \file_get_contents($this->publicDir.'/'.$entryFile);
+        if (false === $content) {
+            throw new LoaderError(\sprintf('Unable to read file "%s".', $this->publicDir.'/'.$entryFile));
+        }
+
+        return $content;
     }
 
     /**

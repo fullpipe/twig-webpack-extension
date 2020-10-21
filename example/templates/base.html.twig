@@ -4,15 +4,17 @@
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
         {% block stylesheets %}
-
             {% webpack_entry_css 'main' %}
+            {% webpack_entry_css 'inline' inline %}
         {% endblock %}
     </head>
     <body>
         {% block body %}{% endblock %}
         {% block javascripts %}
-            {% webpack_entry_js 'vendor' defer %}
+            {% webpack_entry_js 'vendor' %}
             {% webpack_entry_js 'main' defer %}
+            {% webpack_entry_js 'second' async %}
+            {% webpack_entry_js 'inline' inline %}
         {% endblock %}
     </body>
 </html>

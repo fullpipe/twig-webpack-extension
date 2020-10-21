@@ -1,11 +1,12 @@
 {
+  "description": "",
   "type": "project",
   "license": "proprietary",
   "require": {
     "php": "^7.1.3",
     "ext-ctype": "*",
     "ext-iconv": "*",
-    "fullpipe/twig-webpack-extension": "dev-master",
+    "fullpipe/twig-webpack-extension": "dev-add-inline",
     "symfony/console": "4.4.*",
     "symfony/dotenv": "4.4.*",
     "symfony/flex": "^1.3.1",

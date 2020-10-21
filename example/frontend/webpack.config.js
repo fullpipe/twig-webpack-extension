@@ -6,23 +6,25 @@ const ExtractTextPlugin = require("extract-text-webpack-plugin");
 module.exports = {
   entry: {
     vendor: ["jquery", "lodash"],
-    main: "./src/index.js"
+    main: "./src/index.js",
+    second: "./src/second.js",
+    inline: "./src/inline.js",
   },
   output: {
-    filename: "js/[name].js",
+    filename: "js/[name].[chunkhash].js",
     path: path.resolve(__dirname, "../public/build"),
-    publicPath: "/build/"
+    publicPath: "/build/",
   },
   plugins: [
     new webpack.optimize.CommonsChunkPlugin({
       name: "vendor",
-      minChunks: Infinity
+      minChunks: Infinity,
     }),
     new ManifestPlugin(),
     new ExtractTextPlugin({
-      filename: "css/[name].css",
-      publicPath: "/build/"
-    })
+      filename: "css/[name].[chunkhash].css",
+      publicPath: "/build/",
+    }),
   ],
   module: {
     rules: [
@@ -30,9 +32,9 @@ module.exports = {
         test: /\.css$/,
         use: ExtractTextPlugin.extract({
           fallback: "style-loader",
-          use: "css-loader"
-        })
-      }
-    ]
-  }
+          use: "css-loader",
+        }),
+      },
+    ],
+  },
 };

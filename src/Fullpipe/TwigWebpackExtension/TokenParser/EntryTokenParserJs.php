@@ -17,12 +17,12 @@ class EntryTokenParserJs extends AbstractTokenParser
     /**
      * @var string
      */
-    private $publicPath;
+    private $publicDir;
 
-    public function __construct(string $manifestFile, string $publicPath)
+    public function __construct(string $manifestFile, string $publicDir)
     {
         $this->manifestFile = $manifestFile;
-        $this->publicPath = $publicPath;
+        $this->publicDir = $publicDir;
     }
 
     /**
@@ -34,6 +34,7 @@ class EntryTokenParserJs extends AbstractTokenParser
         $entryName = $stream->expect(Token::STRING_TYPE)->getValue();
         $defer = $stream->nextIf(/* Token::NAME_TYPE */ 5, 'defer');
         $async = $stream->nextIf(/* Token::NAME_TYPE */ 5, 'async');
+        $inline = $stream->nextIf(/* Token::NAME_TYPE */ 5, 'inline');
         $stream->expect(Token::BLOCK_END_TYPE);
 
         if (!\file_exists($this->manifestFile)) {
@@ -47,17 +48,43 @@ class EntryTokenParserJs extends AbstractTokenParser
             throw new LoaderError('Webpack js entry '.$entryName.' not exists.', $token->getLine(), $stream->getSourceContext());
         }
 
-        $entryPath = $this->publicPath.$manifest[$manifestIndex];
+        $entryPath = $manifest[$manifestIndex];
 
-        $tag = \sprintf(
-            '<script type="text/javascript" src="%s"%s></script>',
-            $entryPath,
-            $defer
+        if ($inline) {
+            $tag = \sprintf(
+                '<script type="text/javascript">%s</script>',
+                $this->getEntryContent($entryPath)
+            );
+        } else {
+            $tag = \sprintf(
+                '<script type="text/javascript" src="%s"%s></script>',
+                $entryPath,
+                $defer
                 ? ' defer'
                 : ($async ? ' async' : '')
-        );
+            );
+        }
 
         return new TextNode($tag, $token->getLine());
+    }
+
+    /**
+     * @throws LoaderError if file does not exists or not readable
+     */
+    private function getEntryContent(string $entryFile): ?string
+    {
+        $entryFile = \trim($entryFile, '/');
+
+        if (!\file_exists($this->publicDir.'/'.$entryFile)) {
+            throw new LoaderError(\sprintf('Entry file "%s" does not exists.', $this->publicDir.'/'.$entryFile));
+        }
+
+        $content = \file_get_contents($this->publicDir.'/'.$entryFile);
+        if (false === $content) {
+            throw new LoaderError(\sprintf('Unable to read file "%s".', $this->publicDir.'/'.$entryFile));
+        }
+
+        return $content;
     }
 
     /**
